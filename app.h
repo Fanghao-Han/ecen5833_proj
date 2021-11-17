@@ -57,6 +57,7 @@
 #include "i2c.h"
 #include "ble.h"
 
+#include "ridar_test.h"
 #include "ridar_fsm.h"
 
 #define INCLUDE_LOG_DEBUG 1
