@@ -32,9 +32,13 @@
 #define I2C0_SDA_PIN      11
 
 /* Distance Sensor VL53L0x */
-#define VL53L0X_GPIO_PORT  gpioPortD
+#define VL53L0X_GPIO_PORT   gpioPortD
 #define VL53L0X_XSHUT_PIN   11        // Power control, EXP9
 #define VL53L0X_GPIO1_PIN   12        // Interrupt, EXP11
+
+/* Color & Gesture Sensor Apds9960 */
+#define APDS9960_GPIO_PORT  gpioPortD
+#define APDS9960_INT_PIN    10        // Interrupt, EXP7
 
 // Function prototypes
 void gpioInit();

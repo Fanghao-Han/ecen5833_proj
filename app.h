@@ -60,6 +60,9 @@
 #include "ridar_test.h"
 #include "ridar_fsm.h"
 
+#include "apds9960_test.h"
+#include "gesture_fsm.h"
+
 #define INCLUDE_LOG_DEBUG 1
 
 #define DEBUG_EM0

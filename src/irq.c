@@ -66,9 +66,13 @@ void GPIO_EVEN_IRQHandler(void)
   GPIO_IntClear(0x5555);
 
   //button_on_change_handler(0);
-  if (gpio_if & (1U<<12)) {
+  if (gpio_if & (1U<<VL53L0X_GPIO1_PIN)) {
       // exp11
-      vl_set_flag_measure_ready(true);;
+      vl_set_flag_measure_ready(true);
+  }
+  else if (gpio_if & (1U<<APDS9960_INT_PIN)) {
+      // exp7
+      gest_set_flag_data_ready(true);
   }
 }
 

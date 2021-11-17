@@ -105,10 +105,29 @@ SL_WEAK void app_init(void)
   // Start timer
   LETIMER_Enable(LETIMER0, true);
 
-  vl53l0x_init();
+  // Initialize sensors
+  if (vl53l0x_init()) {
+      LOG_ERROR("vl53l0x init success");
+  }
+  else {
+      LOG_ERROR("Error: vl53l0x init");
+  }
   timerWaitms(500);
-}
 
+  if (APDS9960_init()) {
+      LOG_INFO("APDS-9960 initialization complete");
+  }
+  else {
+      LOG_ERROR("Error: APDS-9960 init");
+  }
+
+  if (APDS9960_enableLightSensor(false)) {
+      LOG_INFO("Light sensor is now running");
+  }
+  else {
+      LOG_ERROR("Error: light sensor init");
+  }
+}
 
 
 

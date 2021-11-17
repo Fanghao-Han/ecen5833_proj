@@ -27,6 +27,7 @@ void schedulerApp()
       ridar_fsm();
       break;
     case evtReadGesture:
+      gesture_fsm();
       break;
     default:
       break;
