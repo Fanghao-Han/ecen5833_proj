@@ -16,10 +16,11 @@
 // to determine the correct values for these.
 
 /* LED Peripheral */
-#define LED0_port         gpioPortF
-#define LED0_pin          4
-#define LED1_port         gpioPortF
-#define LED1_pin          5
+#define LED_port         gpioPortA
+#define LED_LEFT_PIN     1
+#define LED_UP_PIN       2
+#define LED_RIGHT_PIN    3
+#define LED_BOTTOM_PIN   4
 
 /* buttons */
 #define BTN_port          gpioPortF

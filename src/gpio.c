@@ -9,11 +9,17 @@
 void gpioInit()
 {
   // 1. LEDs
-  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthStrongAlternateStrong);
-  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, false);
 
-  GPIO_DriveStrengthSet(LED1_port, gpioDriveStrengthStrongAlternateStrong);
-  GPIO_PinModeSet(LED1_port, LED1_pin, gpioModePushPull, false);
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_UP_PIN, gpioModePushPull, false);
+
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_RIGHT_PIN, gpioModePushPull, false);
+
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, false);
 
   // 2. buttons, filter
   GPIO_PinModeSet(BTN_port, BTN0_PIN, gpioModeInputPullFilter, 1);
@@ -43,28 +49,22 @@ void gpioInit()
 } // gpioInit()
 
 
-void gpioLed0SetOn()
+void gpioLedLeftSetOn()
 {
-  GPIO_PinOutSet(LED0_port,LED0_pin);
+  GPIO_PinOutSet(LED_port,LED_LEFT_PIN);
 }
 
 
-void gpioLed0SetOff()
+void gpioLedLeftSetOff()
 {
-  GPIO_PinOutClear(LED0_port,LED0_pin);
+  GPIO_PinOutClear(LED_port,LED_LEFT_PIN);
 }
 
-
-void gpioLed1SetOn()
+void gpioLedLeftToggle()
 {
-  GPIO_PinOutSet(LED1_port,LED1_pin);
+  GPIO_PinOutToggle(LED_port,LED_LEFT_PIN);
 }
 
-
-void gpioLed1SetOff()
-{
-  GPIO_PinOutClear(LED1_port,LED1_pin);
-}
 
 bool gpioReadBTN(uint8_t id)
 {
