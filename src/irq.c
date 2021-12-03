@@ -72,7 +72,7 @@ void GPIO_EVEN_IRQHandler(void)
   }
   else if (gpio_if & (1U<<APDS9960_INT_PIN)) {
       // exp7
-      gest_set_flag_data_ready(true);
+      gest_set_flag_isr(true);
   }
 }
 

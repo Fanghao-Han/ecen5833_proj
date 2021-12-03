@@ -551,7 +551,7 @@ int APDS9960_readGesture()
           /* If there's stuff in the FIFO, read it into our data block */
           if( fifo_level > 0) {
               if( wireReadDataBlock(APDS9960_GFIFO_U,
-                                   (uint8_t*)fifo_data,
+                                   fifo_data,
                                    (fifo_level * 4))
                   == -1 ) {
                   return ERROR;

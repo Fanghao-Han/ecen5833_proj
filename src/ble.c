@@ -19,6 +19,9 @@
 #define SLAVE_LATENCY         (4)     // slave latency (* connection interval)
 #define SUPERVISION_TIMEOUT   (200)   // (1+4)*(2*75ms)/(10ms)=75
 
+#define VL53_TIMER_HANDLE     2
+#define APDS_TIMER_HANDLE     3
+
 // BLE private data
 static ble_data_struct_t ble_data;
 
@@ -38,37 +41,6 @@ ble_data_struct_t* getBleDataPtr()
 {
   return (&ble_data);
 } // getBleDataPtr()
-
-//static void temperature_measurement_val_to_buf(int32_t value,
-//                                               bool fahrenheit,
-//                                               uint8_t *buffer)
-//{
-//  uint32_t tmp_value = ((uint32_t)value & 0x00ffffffu)
-//                       | ((uint32_t)(-3) << 24);
-//  buffer[0] = fahrenheit ? 0x1 : 0;
-//  buffer[1] = tmp_value & 0xff;
-//  buffer[2] = (tmp_value >> 8) & 0xff;
-//  buffer[3] = (tmp_value >> 16) & 0xff;
-//  buffer[4] = (tmp_value >> 24) & 0xff;
-//}
-//
-//static sl_status_t ble_send_temperature(float value, bool fahrenheit, uint8_t connection)
-//{
-//  sl_status_t sc = 0;
-//
-//  uint8_t buf[5] = { 0 };
-//  int32_t temperature_in_c = (int32_t)(value * 1000);
-//
-//  temperature_measurement_val_to_buf(temperature_in_c,
-//                                     fahrenheit, buf);
-//  sc = sl_bt_gatt_server_send_indication(
-//    connection,
-//    gattdb_temperature_measurement,
-//    sizeof(buf),
-//    buf);
-//
-//  return sc;
-//}
 
 void handle_ble_event(sl_bt_msg_t *evt)
 {
@@ -144,8 +116,17 @@ void handle_ble_event(sl_bt_msg_t *evt)
 
 
         // Customize events can be received from now on.
-        vl_set_flag_enable(true);
-        schedulerSetEventReadDistance();
+        schedulerSetEventIdle();
+
+        // 50ms per read for distance sensor
+//        if (sl_bt_system_set_soft_timer(1638, APDS_TIMER_HANDLE,0) != SL_STATUS_OK) {
+//            LOG_ERROR("soft timer error\r\n");
+//        }
+//
+//        // 200ms per read for gesture sensor
+//        if (sl_bt_system_set_soft_timer(6553, APDS_TIMER_HANDLE,0) != SL_STATUS_OK) {
+//            LOG_ERROR("soft timer error\r\n");
+//         }
 
         break;
       }
@@ -209,6 +190,17 @@ void handle_ble_event(sl_bt_msg_t *evt)
         }
         break;
       }
+
+      case sl_bt_evt_system_soft_timer_id:
+      {
+        if (evt->data.evt_system_soft_timer.handle == APDS_TIMER_HANDLE) {
+            if (!vl_get_flag_enable() && !gest_get_flag_enable()) {
+                gest_set_flag_enable(true);
+            }
+        }
+      }
+          break;
+
       // -------------------------------
       // This event indicates that the value of an attribute in the local GATT
       // database was changed by a remote GATT client.
