@@ -5,11 +5,14 @@
  *      Author: han16
  */
 
-#define GESTURE_TEST_MODE  GTM_COLOR
+#define GESTURE_TEST_MODE  GTM_GEST
+
 #include "gesture_fsm.h"
+#include "SparkFun_APDS9960.h"
+#include "apds9960_i2c.h"
 
-
-
+#define INCLUDE_LOG_DEBUG 1
+#include "log.h"
 
 struct gest_data_typedef {
     uint16_t proximity;
@@ -26,13 +29,15 @@ static uint8_t curr_state = 0;
 static uint8_t next_state = 0;
 
 bool flag_gest_en = false;
-bool flag_gest_measure_ready = false;
+bool flag_gest_isr = false;
 bool flag_gest_data_ready = false;
 
 gest_data_t gest_data = {0};
 
 
-#if (GESTURE_TEST_MODE == GTM_COLOR)
+static bool handleGesture();
+
+#if 0
 void gesture_fsm() {
     curr_state = next_state;
 
@@ -67,9 +72,27 @@ void gesture_fsm() {
         }
     }
 }
-#elif (GESTURE_TEST_MODE == GTM_COLOR_INT)
+#else
 void gesture_fsm() {
-    ;
+
+  curr_state = next_state;
+
+  switch(curr_state) {
+      case gest_st_IDLE: {
+        if (gest_get_flag_isr()) {
+            gest_set_flag_isr(false);
+
+            gpioLed0SetOn();
+            handleGesture();
+
+            //next_state = gest_st_MeasureRequest;
+        }
+        else {
+            gpioLed0SetOff();
+        }
+        break;
+      }
+  }
 }
 #endif
 
@@ -84,11 +107,17 @@ bool gest_get_flag_enable() {
 }
 
 
-void gest_set_flag_measure_ready(bool is_enable) {
-    flag_gest_measure_ready = is_enable;
+void gest_set_flag_isr(bool is_enable) {
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_CRITICAL();
+
+  flag_gest_isr = is_enable;
+
+  CORE_EXIT_CRITICAL();
+
 }
-bool gest_get_flag_measure_ready() {
-    return flag_gest_measure_ready;
+bool gest_get_flag_isr() {
+    return flag_gest_isr;
 }
 
 
@@ -114,3 +143,36 @@ gest_data_t * gest_get_result() {
 }
 
 
+static bool handleGesture() {
+    if (APDS9960_isGestureAvailable()) {
+      int gest_st = APDS9960_readGesture();
+      switch (gest_st) {
+        case DIR_UP:
+          LOG_INFO("Up");
+          break;
+        case DIR_DOWN:
+          LOG_INFO("Down");
+          break;
+        case DIR_LEFT:
+          LOG_INFO("Left");
+          break;
+        case DIR_RIGHT:
+          LOG_INFO("Right");
+          break;
+        case DIR_NEAR:
+          LOG_INFO("Near");
+          break;
+        case DIR_FAR:
+          LOG_INFO("Far");
+          break;
+        default:
+          LOG_INFO("None");
+          break;
+      }
+
+      return true;
+    }
+    else {
+        return false;
+    }
+}

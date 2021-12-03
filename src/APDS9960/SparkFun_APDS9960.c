@@ -65,14 +65,15 @@ bool setGestureMode(uint8_t mode);
 
 /* Members */
 gesture_data_type gesture_data_ = {0};
-int gesture_ud_delta_= 0;
-int gesture_lr_delta_= 0;
-int gesture_ud_count_= 0;
-int gesture_lr_count_= 0;
-int gesture_near_count_= 0;
-int gesture_far_count_= 0;
-int gesture_state_= 0;
-int gesture_motion_= 0;
+
+volatile int gesture_ud_delta_= 0;
+volatile int gesture_lr_delta_= 0;
+volatile int gesture_ud_count_= 0;
+volatile int gesture_lr_count_= 0;
+volatile int gesture_near_count_= 0;
+volatile int gesture_far_count_= 0;
+volatile int gesture_state_= 0;
+volatile int gesture_motion_= DIR_NONE;
 
 /**
 * @brief Constructor - Instantiates APDS9960 object
@@ -225,7 +226,7 @@ bool APDS9960_init()
           (reg != 0xAC) && \
           (reg != 0xAD) )
       {
-          wireReadDataByte(reg, val);
+          wireReadDataByte(reg, &val);
           Serial.print(reg, HEX);
           Serial.print(": 0x");
           Serial.println(val, HEX);
@@ -233,7 +234,7 @@ bool APDS9960_init()
   }
 
   for(reg = 0xE4; reg <= 0xE7; reg++) {
-      wireReadDataByte(reg, val);
+      wireReadDataByte(reg, &val);
       Serial.print(reg, HEX);
       Serial.print(": 0x");
       Serial.println(val, HEX);
@@ -514,13 +515,13 @@ int APDS9960_readGesture()
 {
   uint8_t fifo_level = 0;
   uint8_t bytes_read = 0;
-  uint8_t fifo_data[128];
-  uint8_t gstatus;
+  uint8_t fifo_data[128] = {0};
+  uint8_t gstatus = 0;
   int motion;
   int i;
   
   /* Make sure that power and gesture is on and data is valid */
-  if( !APDS9960_isGestureAvailable() || !(APDS9960_getMode() & 0b01000001) ) {
+  if( !APDS9960_isGestureAvailable() || !(APDS9960_getMode() & 0x41) ) {
       return DIR_NONE;
   }
   
@@ -539,6 +540,8 @@ int APDS9960_readGesture()
       if( (gstatus & APDS9960_GVALID) == APDS9960_GVALID ) {
       
           /* Read the current FIFO level */
+          /* This register indicates how many four byte data points - UDLR are ready for
+        read over I2C. One four-byte dataset is equivalent to a single count in GFLVL.*/
           if( !wireReadDataByte(APDS9960_GFLVL, &fifo_level) ) {
               return ERROR;
           }
@@ -550,10 +553,10 @@ int APDS9960_readGesture()
 
           /* If there's stuff in the FIFO, read it into our data block */
           if( fifo_level > 0) {
-              if( wireReadDataBlock(APDS9960_GFIFO_U,
-                                   (uint8_t*)fifo_data,
-                                   (fifo_level * 4))
-                  == -1 ) {
+              bytes_read = wireReadDataBlock(APDS9960_GFIFO_U,
+                                             fifo_data,
+                                             (fifo_level * 4));
+              if( bytes_read == -1 ) {
                   return ERROR;
               }
 #if DEBUG

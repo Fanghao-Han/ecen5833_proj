@@ -16,16 +16,15 @@
 // to determine the correct values for these.
 
 /* LED Peripheral */
-#define LED_port         gpioPortA
-#define LED_LEFT_PIN     1
-#define LED_UP_PIN       2
-#define LED_RIGHT_PIN    3
-#define LED_BOTTOM_PIN   4
-
-/* buttons */
-#define BTN_port          gpioPortF
-#define BTN0_PIN          6
-#define BTN1_PIN          7
+//#define LED_port         gpioPortA
+//#define LED_LEFT_PIN     1
+//#define LED_UP_PIN       2
+//#define LED_RIGHT_PIN    3
+//#define LED_BOTTOM_PIN   4
+#define LED0_port         gpioPortF
+#define LED0_pin          4
+#define LED1_port         gpioPortF
+#define LED1_pin          5
 
 /* I2C0 Peripheral */
 #define I2C0_PORT         gpioPortC
@@ -47,12 +46,10 @@ void gpioInit();
 /* GPIO Write */
 void gpioLed0SetOn();
 void gpioLed0SetOff();
-void gpioLed1SetOn();
-void gpioLed1SetOff();
+
 void gpioVL53SetOn();
 void gpioVL53SetOff();
 
-/*GPIO Read*/
-bool gpioReadBTN(uint8_t id);
+
 
 #endif /* SRC_GPIO_H_ */

@@ -32,6 +32,7 @@ enum {
     GTM_COLOR_INT,
     GTM_POX,
     GTM_POX_INT,
+    GTM_GEST,
     GTM_NUM,
 };
 
@@ -48,6 +49,7 @@ typedef enum {
   gest_st_Error,
 }gest_state_t;
 
+
 typedef struct gest_data_typedef gest_data_t;
 
 /**
@@ -59,12 +61,12 @@ bool gest_get_flag_enable();
 
 /**
  * @brief
- *  FLAG - Chip Measurement Completed
+ *  FLAG - Chip interrupt
  * @details
  *
  * */
-void gest_set_flag_measure_ready(bool is_enable);
-bool gest_get_flag_measure_ready();
+void gest_set_flag_isr(bool is_enable);
+bool gest_get_flag_isr();
 
 /**
  * @brief
@@ -79,10 +81,11 @@ bool gest_get_flag_data_ready();
  * @brief
  *  gesture data write & read
  * */
-void gest_set_result(gest_data_t wdata);
+void gest_set_result(gest_data_t * wdata);
 gest_data_t * gest_get_result();
 
 
 void gesture_fsm();
+
 
 #endif /* INC_GESTURE_FSM_H_ */

@@ -61,6 +61,7 @@
 #include "ridar_fsm.h"
 
 #include "apds9960_test.h"
+#include "APDS9960/SparkFun_APDS9960.h"
 #include "gesture_fsm.h"
 
 #define INCLUDE_LOG_DEBUG 1

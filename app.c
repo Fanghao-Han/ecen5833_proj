@@ -38,6 +38,8 @@
 
 #include "app.h"
 
+#define INCLUDE_LOG_DEBUG 1
+#include "log.h"
 
 /*****************************************************************************
  * Application Power Manager callbacks
@@ -107,7 +109,7 @@ SL_WEAK void app_init(void)
 
   // Initialize sensors
   if (vl53l0x_init()) {
-      LOG_ERROR("vl53l0x init success");
+      LOG_INFO("vl53l0x init success");
   }
   else {
       LOG_ERROR("Error: vl53l0x init");
@@ -121,11 +123,11 @@ SL_WEAK void app_init(void)
       LOG_ERROR("Error: APDS-9960 init");
   }
 
-  if (APDS9960_enableLightSensor(false)) {
-      LOG_INFO("Light sensor is now running");
+  if (APDS9960_enableGestureSensor(true)) {
+      LOG_INFO("Gesture sensor is now running");
   }
   else {
-      LOG_ERROR("Error: light sensor init");
+      LOG_ERROR("Error: gesture sensor init");
   }
 }
 
@@ -139,9 +141,9 @@ SL_WEAK void app_process_action(void)
 {
   // scheduler application entry
   //schedulerApp();
-
-  gpioLedLeftToggle();
-  timerWaitms(500);
+  gesture_fsm();
+  //gpioLedLeftToggle();
+  //timerWaitms(500);
 
 }
 
