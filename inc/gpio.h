@@ -16,15 +16,15 @@
 // to determine the correct values for these.
 
 /* LED Peripheral */
-//#define LED_port         gpioPortA
-//#define LED_LEFT_PIN     1
-//#define LED_UP_PIN       2
-//#define LED_RIGHT_PIN    3
-//#define LED_BOTTOM_PIN   4
-#define LED0_port         gpioPortF
-#define LED0_pin          4
-#define LED1_port         gpioPortF
-#define LED1_pin          5
+#define LED_port         gpioPortA
+#define LED_LEFT_PIN     1
+#define LED_UP_PIN       2
+#define LED_RIGHT_PIN    3
+#define LED_BOTTOM_PIN   4
+//#define LED0_port         gpioPortF
+//#define LED0_pin          4
+//#define LED1_port         gpioPortF
+//#define LED1_pin          5
 
 /* I2C0 Peripheral */
 #define I2C0_PORT         gpioPortC
@@ -33,19 +33,23 @@
 
 /* Distance Sensor VL53L0x */
 #define VL53L0X_GPIO_PORT   gpioPortD
-#define VL53L0X_XSHUT_PIN   11        // Power control, EXP9
-#define VL53L0X_GPIO1_PIN   12        // Interrupt, EXP11
+//#define VL53L0X_XSHUT_PIN   11        // Power control, EXP9
+#define VL53L0X_GPIO1_PIN   11        // Interrupt
 
 /* Color & Gesture Sensor Apds9960 */
 #define APDS9960_GPIO_PORT  gpioPortD
-#define APDS9960_INT_PIN    10        // Interrupt, EXP7
+#define APDS9960_INT_PIN    12        // Interrupt
 
 // Function prototypes
 void gpioInit();
 
 /* GPIO Write */
-void gpioLed0SetOn();
-void gpioLed0SetOff();
+//void gpioLed0SetOn();
+//void gpioLed0SetOff();
+/**
+ * led_id - use "DIR_UP", "DIR_DOWN", "DIR_LEFT", "DIR_RIGHT"
+ * */
+void gpioGestureLedSet(uint8_t led_id, bool on);
 
 void gpioVL53SetOn();
 void gpioVL53SetOff();

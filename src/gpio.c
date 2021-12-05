@@ -5,30 +5,42 @@
 
 #include "gpio.h"
 
-static bool led0_en = 0;
+//static bool led0_en = 0;
+static bool led_gest_en[4] = {0};
+/* Direction definitions */
+enum {
+  DIR_NONE,
+  DIR_LEFT,
+  DIR_RIGHT,
+  DIR_UP,
+  DIR_DOWN,
+  DIR_NEAR,
+  DIR_FAR,
+  DIR_ALL
+};
 
 // Set GPIO drive strengths and modes of operation
 void gpioInit()
 {
   // 1. LEDs
-//  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-//  GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, false);
-//
-//  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-//  GPIO_PinModeSet(LED_port, LED_UP_PIN, gpioModePushPull, false);
-//
-//  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-//  GPIO_PinModeSet(LED_port, LED_RIGHT_PIN, gpioModePushPull, false);
-//
-//  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-//  GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, false);
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, false);
 
-  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
-  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_UP_PIN, gpioModePushPull, false);
+
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_RIGHT_PIN, gpioModePushPull, false);
+
+  GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
+  GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, false);
+
+//  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
+//  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
 
   // 2. Distance Sensor VL53L0X
-  GPIO_DriveStrengthSet(VL53L0X_GPIO_PORT, gpioDriveStrengthStrongAlternateStrong);
-  GPIO_PinModeSet(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN, gpioModePushPull, false);
+//  GPIO_DriveStrengthSet(VL53L0X_GPIO_PORT, gpioDriveStrengthStrongAlternateStrong);
+//  GPIO_PinModeSet(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN, gpioModePushPull, false);
 
   GPIO_PinModeSet(VL53L0X_GPIO_PORT, VL53L0X_GPIO1_PIN, gpioModeInputPullFilter, 1);
 //  GPIO_ExtIntConfig(VL53L0X_GPIO_PORT, VL53L0X_GPIO1_PIN, VL53L0X_GPIO1_PIN / 4,
@@ -46,37 +58,99 @@ void gpioInit()
 } // gpioInit()
 
 
-void gpioLed0SetOn()
-{
-  if (!led0_en) {
-    GPIO_PinOutSet(LED0_port,LED0_pin);
-    led0_en = true;
-  }
-}
-
-void gpioLed0SetOff()
-{
-  if (led0_en) {
-    GPIO_PinOutClear(LED0_port,LED0_pin);
-    led0_en = false;
-  }
-}
-
-
-//void gpioLedLeftSetOn()
+//void gpioLed0SetOn()
 //{
-//  GPIO_PinOutSet(LED_port,LED_LEFT_PIN);
+//  if (!led0_en) {
+//    GPIO_PinOutSet(LED0_port,LED0_pin);
+//    led0_en = true;
+//  }
 //}
 //
-//void gpioLedLeftSetOff()
+//void gpioLed0SetOff()
 //{
-//  GPIO_PinOutClear(LED_port,LED_LEFT_PIN);
+//  if (led0_en) {
+//    GPIO_PinOutClear(LED0_port,LED0_pin);
+//    led0_en = false;
+//  }
 //}
-//
-//void gpioLedLeftToggle()
-//{
-//  GPIO_PinOutToggle(LED_port,LED_LEFT_PIN);
-//}
+
+
+void gpioGestureLedSet(uint8_t led_id, bool on)
+{
+  switch(led_id) {
+    case DIR_UP:
+      if (on) {
+          // turn on
+          if (!led_gest_en[0]) {
+              GPIO_PinOutClear(LED_port,LED_UP_PIN);
+              led_gest_en[0] = on;
+          }
+      }
+      else {
+          // turn off
+          if (led_gest_en[0]) {
+            GPIO_PinOutSet(LED_port,LED_UP_PIN);
+            led_gest_en[0] = on;
+          }
+      }
+      break;
+    case DIR_DOWN:
+      if (on) {
+          if (!led_gest_en[1]) {
+          GPIO_PinOutClear(LED_port,LED_BOTTOM_PIN);
+          led_gest_en[1] = on;
+          }
+      }
+      else {
+          if (led_gest_en[1]) {
+          GPIO_PinOutSet(LED_port,LED_BOTTOM_PIN);
+          led_gest_en[1] = on;
+          }
+      }
+      break;
+    case DIR_LEFT:
+      if (on) {
+          if (!led_gest_en[2]) {
+          GPIO_PinOutClear(LED_port,LED_LEFT_PIN);
+          led_gest_en[2] = on;
+          }
+      }
+      else {
+          if (!led_gest_en[2]) {
+          GPIO_PinOutSet(LED_port,LED_LEFT_PIN);
+          led_gest_en[2] = on;
+          }
+      }
+      break;
+    case DIR_RIGHT:
+      if (on) {
+          if (!led_gest_en[3]) {
+          GPIO_PinOutClear(LED_port,LED_RIGHT_PIN);
+          led_gest_en[3] = on;
+          }
+      }
+      else {
+          if (led_gest_en[3]) {
+          GPIO_PinOutSet(LED_port,LED_RIGHT_PIN);
+          led_gest_en[3] = on;
+          }
+      }
+      break;
+    default:
+      break;
+  }
+
+}
+
+void gpioGestureLedLeftSetOff()
+{
+  GPIO_PinOutClear(LED_port,LED_LEFT_PIN);
+}
+
+void gpioGestureLedLeftToggle()
+{
+  GPIO_PinOutToggle(LED_port,LED_LEFT_PIN);
+}
 
 
 
@@ -86,15 +160,15 @@ void gpioI2C0SetOff()
   GPIO_PinOutClear(I2C0_PORT, I2C0_SDA_PIN);
 }
 
-void gpioVL53SetOn()
-{
-  GPIO_PinOutSet(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN);
-}
-
-void gpioVL53SetOff()
-{
-  GPIO_PinOutClear(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN);
-}
+//void gpioVL53SetOn()
+//{
+//  GPIO_PinOutSet(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN);
+//}
+//
+//void gpioVL53SetOff()
+//{
+//  GPIO_PinOutClear(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN);
+//}
 
 bool gpioReadVL53IrqPin()
 {

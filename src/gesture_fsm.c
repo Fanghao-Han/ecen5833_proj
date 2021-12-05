@@ -82,13 +82,19 @@ void gesture_fsm() {
         if (gest_get_flag_isr()) {
             gest_set_flag_isr(false);
 
-            gpioLed0SetOn();
+//            gpioLed0SetOn();
+            gpioGestureLedSet(DIR_UP, 1);
+            gpioGestureLedSet(DIR_DOWN, 1);
+            gpioGestureLedSet(DIR_LEFT, 1);
+            gpioGestureLedSet(DIR_RIGHT, 1);
+
             handleGesture();
 
             //next_state = gest_st_MeasureRequest;
         }
         else {
-            gpioLed0SetOff();
+//            gpioLed0SetOff();
+            ;
         }
         break;
       }
@@ -146,27 +152,49 @@ gest_data_t * gest_get_result() {
 static bool handleGesture() {
     if (APDS9960_isGestureAvailable()) {
       int gest_st = APDS9960_readGesture();
+
       switch (gest_st) {
         case DIR_UP:
-          LOG_INFO("Up");
+//          LOG_INFO("Up");
+          gpioGestureLedSet(DIR_UP, 0);
+          gpioGestureLedSet(DIR_DOWN, 0);
+          gpioGestureLedSet(DIR_LEFT, 0);
+          gpioGestureLedSet(DIR_RIGHT, 0);
           break;
         case DIR_DOWN:
-          LOG_INFO("Down");
+//          LOG_INFO("Down");
+          gpioGestureLedSet(DIR_UP, 0);
+          gpioGestureLedSet(DIR_DOWN, 1);
+          gpioGestureLedSet(DIR_LEFT, 0);
+          gpioGestureLedSet(DIR_RIGHT, 0);
           break;
         case DIR_LEFT:
-          LOG_INFO("Left");
+//          LOG_INFO("Left");
+          gpioGestureLedSet(DIR_UP, 0);
+          gpioGestureLedSet(DIR_DOWN, 0);
+          gpioGestureLedSet(DIR_LEFT, 1);
+          gpioGestureLedSet(DIR_RIGHT, 0);
           break;
         case DIR_RIGHT:
-          LOG_INFO("Right");
+//          LOG_INFO("Right");
+          gpioGestureLedSet(DIR_UP, 0);
+          gpioGestureLedSet(DIR_DOWN, 0);
+          gpioGestureLedSet(DIR_LEFT, 0);
+          gpioGestureLedSet(DIR_RIGHT, 1);
           break;
         case DIR_NEAR:
-          LOG_INFO("Near");
+//          LOG_INFO("Near");
+          // Stop Sign
+          gpioGestureLedSet(DIR_UP, 0);
+          gpioGestureLedSet(DIR_DOWN, 0);
+          gpioGestureLedSet(DIR_LEFT, 0);
+          gpioGestureLedSet(DIR_RIGHT, 0);
           break;
         case DIR_FAR:
-          LOG_INFO("Far");
+//          LOG_INFO("Far");
           break;
         default:
-          LOG_INFO("None");
+//          LOG_INFO("None");
           break;
       }
 

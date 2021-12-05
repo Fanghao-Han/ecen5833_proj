@@ -124,6 +124,10 @@ SL_WEAK void app_init(void)
   }
 
   if (APDS9960_enableGestureSensor(true)) {
+      gpioGestureLedSet(DIR_UP, 0);
+      gpioGestureLedSet(DIR_DOWN, 0);
+      gpioGestureLedSet(DIR_LEFT, 0);
+      gpioGestureLedSet(DIR_RIGHT, 0);
       LOG_INFO("Gesture sensor is now running");
   }
   else {
