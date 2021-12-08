@@ -23,6 +23,8 @@ uint8_t curr_event = 0;
 void schedulerApp()
 {
   switch (getEvent()) {
+    case evtNoEvent:
+      break;
     case evtReadDistance:
       ridar_fsm();
       break;

@@ -19,8 +19,8 @@
 #define SLAVE_LATENCY         (4)     // slave latency (* connection interval)
 #define SUPERVISION_TIMEOUT   (200)   // (1+4)*(2*75ms)/(10ms)=75
 
-#define VL53_TIMER_HANDLE     2
-#define APDS_TIMER_HANDLE     3
+#define VL53_TIMER_HANDLE     12
+#define APDS_TIMER_HANDLE     13
 
 // BLE private data
 static ble_data_struct_t ble_data;
@@ -118,16 +118,6 @@ void handle_ble_event(sl_bt_msg_t *evt)
         // Customize events can be received from now on.
         schedulerSetEventIdle();
 
-        // 50ms per read for distance sensor
-//        if (sl_bt_system_set_soft_timer(1638, APDS_TIMER_HANDLE,0) != SL_STATUS_OK) {
-//            LOG_ERROR("soft timer error\r\n");
-//        }
-//
-//        // 200ms per read for gesture sensor
-//        if (sl_bt_system_set_soft_timer(6553, APDS_TIMER_HANDLE,0) != SL_STATUS_OK) {
-//            LOG_ERROR("soft timer error\r\n");
-//         }
-
         break;
       }
 
@@ -170,7 +160,11 @@ void handle_ble_event(sl_bt_msg_t *evt)
             LOG_ERROR("sl_bt_advertiser_start() returned != 0 status=0x%04x", (unsigned int) sc);
         }
 
-        ble_data.app_connection = true;
+//        if (sl_bt_system_set_soft_timer(1638, VL53_TIMER_HANDLE, true) != SL_STATUS_OK) {
+//            LOG_ERROR("soft timer error\r\n");
+//        }
+
+        ble_data.app_connection = false;
         ble_data.app_connection_handle = ble_evt_get_connection_handle(evt);
         break;
 
@@ -186,7 +180,33 @@ void handle_ble_event(sl_bt_msg_t *evt)
       case sl_bt_evt_system_external_signal_id:
       {
         if (evt->data.evt_system_external_signal.extsignals == BT_EXT_SIG_RIDAR_READY) {
-            app_log("distance: %d mm\r\n", vl_get_result());
+            uint16_t dist_val = vl_get_result();
+            uint8_t buf[2] = {0};
+            buf[1] = dist_val & 0x00FF;
+            buf[0] = (dist_val & 0xFF00) >> 8;
+
+//ble_evt_get_connection_handle(evt),
+            if (ble_data.app_connection) {
+//              sc = sl_bt_gatt_server_send_indication(
+//                  ble_data.app_connection,
+//                  gattdb_Distance,
+//                  sizeof(buf),
+//                  buf);
+              sc = sl_bt_gatt_server_write_attribute_value(gattdb_Distance, 0, sizeof(buf), buf);
+              if (sc != SL_STATUS_OK)
+              {
+                  LOG_ERROR("sl_bt_gatt_server_send_indication() returned != 0 status=0x%04x", (unsigned int) sc);
+              }
+
+              if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
+                  LOG_ERROR("soft timer error\r\n");
+              }
+            }
+
+            app_log("distance: %d mm\r\n", dist_val);
+
+            schedulerSetEventIdle();
+            vl_set_flag_enable(false);
         }
         break;
       }
@@ -195,7 +215,14 @@ void handle_ble_event(sl_bt_msg_t *evt)
       {
         if (evt->data.evt_system_soft_timer.handle == APDS_TIMER_HANDLE) {
             if (!vl_get_flag_enable() && !gest_get_flag_enable()) {
+                schedulerSetEventReadGesture();
                 gest_set_flag_enable(true);
+            }
+        }
+        else if (evt->data.evt_system_soft_timer.handle == VL53_TIMER_HANDLE) {
+            if (!vl_get_flag_enable() && !gest_get_flag_enable()) {
+                schedulerSetEventReadDistance();
+                vl_set_flag_enable(true);
             }
         }
       }
@@ -205,7 +232,58 @@ void handle_ble_event(sl_bt_msg_t *evt)
       // This event indicates that the value of an attribute in the local GATT
       // database was changed by a remote GATT client.
       case sl_bt_evt_gatt_server_attribute_value_id:
+        // The value of characteristic was changed.
+        if (gattdb_distance_en == evt->data.evt_gatt_server_characteristic_status.characteristic) {
+          uint8_t data_recv;
+          size_t data_recv_len;
 
+          // Read characteristic value.
+          sc = sl_bt_gatt_server_read_attribute_value(gattdb_distance_en,
+                                                      0,
+                                                      sizeof(data_recv),
+                                                      &data_recv_len,
+                                                      &data_recv);
+          (void)data_recv_len;
+          app_log_status_error(sc);
+
+          if (sc != SL_STATUS_OK) {
+            break;
+          }
+
+          // Toggle LED.
+          if (data_recv == 0x00) {
+              // stop distance sensor
+              if (sl_bt_system_set_soft_timer(0, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
+                  LOG_ERROR("soft timer error\r\n");
+              }
+
+            //        // 200ms per read for gesture sensor
+            //        if (sl_bt_system_set_soft_timer(6553, APDS_TIMER_HANDLE,0) != SL_STATUS_OK) {
+            //            LOG_ERROR("soft timer error\r\n");
+            //         }
+
+            schedulerSetEventIdle();
+            vl_set_flag_enable(false);
+
+            LOG_INFO("Sensor off.");
+          } else if (data_recv == 0x01) {
+              // 1s per read for distance sensor
+                if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,0) != SL_STATUS_OK) {
+                    LOG_ERROR("soft timer error\r\n");
+                }
+
+              //        // 200ms per read for gesture sensor
+              //        if (sl_bt_system_set_soft_timer(0, APDS_TIMER_HANDLE,1) != SL_STATUS_OK) {
+              //            LOG_ERROR("soft timer error\r\n");
+              //         }
+
+                schedulerSetEventIdle();
+
+              LOG_INFO("Sensor on.");
+          } else {
+              LOG_ERROR("Invalid attribute value: 0x%02x", (int)data_recv);
+          }
+        }
         break;
 
       // -------------------------------

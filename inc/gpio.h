@@ -9,6 +9,7 @@
 #include "em_gpio.h"
 #include <string.h>
 
+#define EVAL_BRD 0
 
 // Student Edit: Define these, 0's are placeholder values.
 // See the radio board user guide at https://www.silabs.com/documents/login/user-guides/ug279-brd4104a-user-guide.pdf
@@ -16,15 +17,19 @@
 // to determine the correct values for these.
 
 /* LED Peripheral */
+
 #define LED_port         gpioPortA
 #define LED_LEFT_PIN     1
 #define LED_UP_PIN       2
 #define LED_RIGHT_PIN    3
 #define LED_BOTTOM_PIN   4
-//#define LED0_port         gpioPortF
-//#define LED0_pin          4
-//#define LED1_port         gpioPortF
-//#define LED1_pin          5
+
+#if EVAL_BRD==1
+#define LED0_port         gpioPortF
+#define LED0_pin          4
+#define LED1_port         gpioPortF
+#define LED1_pin          5
+#endif
 
 /* I2C0 Peripheral */
 #define I2C0_PORT         gpioPortC

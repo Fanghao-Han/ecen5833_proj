@@ -4,25 +4,18 @@
 
 
 #include "gpio.h"
+#include "SparkFun_APDS9960.h"
 
 //static bool led0_en = 0;
 static bool led_gest_en[4] = {0};
 /* Direction definitions */
-enum {
-  DIR_NONE,
-  DIR_LEFT,
-  DIR_RIGHT,
-  DIR_UP,
-  DIR_DOWN,
-  DIR_NEAR,
-  DIR_FAR,
-  DIR_ALL
-};
+
 
 // Set GPIO drive strengths and modes of operation
 void gpioInit()
 {
   // 1. LEDs
+#if EVAL_BRD==0
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
   GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, false);
 
@@ -34,10 +27,10 @@ void gpioInit()
 
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
   GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, false);
-
-//  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
-//  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
-
+#else
+  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
+  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
+#endif
   // 2. Distance Sensor VL53L0X
 //  GPIO_DriveStrengthSet(VL53L0X_GPIO_PORT, gpioDriveStrengthStrongAlternateStrong);
 //  GPIO_PinModeSet(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN, gpioModePushPull, false);
@@ -151,7 +144,6 @@ void gpioGestureLedLeftToggle()
 {
   GPIO_PinOutToggle(LED_port,LED_LEFT_PIN);
 }
-
 
 
 void gpioI2C0SetOff()
