@@ -117,7 +117,7 @@ void gpioGestureLedSet(uint8_t led_id, bool on)
           }
       }
       else {
-          if (!led_gest_en[2]) {
+          if (led_gest_en[2]) {
           GPIO_PinOutSet(LED_port,LED_LEFT_PIN);
           led_gest_en[2] = on;
           }
