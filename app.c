@@ -100,6 +100,7 @@ SL_WEAK void app_init(void)
       sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM2);
   }
 
+
   // Start timer
   LETIMER_Enable(LETIMER0, true);
 
@@ -110,7 +111,7 @@ SL_WEAK void app_init(void)
   else {
       LOG_ERROR("Error: vl53l0x init");
   }
-  timerWaitms(1000);
+  timerWaitms(500);
 
   if (APDS9960_init()) {
       LOG_INFO("APDS-9960 initialization complete");
@@ -144,8 +145,8 @@ SL_WEAK void app_init(void)
 SL_WEAK void app_process_action(void)
 {
   // scheduler application entry
-  //schedulerApp();
-  gesture_fsm();
+  schedulerApp();
+  //gesture_fsm();
   //gpioLedLeftToggle();
   //timerWaitms(500);
 
@@ -166,7 +167,7 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
       ;
   }
 
-  //handle_ble_event(evt); // put this code in ble.c/.h
+  handle_ble_event(evt); // put this code in ble.c/.h
 
 } // sl_bt_on_event()
 

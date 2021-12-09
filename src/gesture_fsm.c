@@ -90,6 +90,7 @@ void gesture_fsm() {
 
             handleGesture();
 
+            schedulerSetEventIdle();
             //next_state = gest_st_MeasureRequest;
         }
         else {
