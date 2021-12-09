@@ -4,36 +4,37 @@
 
 
 #include "gpio.h"
+#include "SparkFun_APDS9960.h"
 
 //static bool led0_en = 0;
 static bool led_gest_en[4] = {0};
 /* Direction definitions */
-enum {
-  DIR_NONE,
-  DIR_LEFT,
-  DIR_RIGHT,
-  DIR_UP,
-  DIR_DOWN,
-  DIR_NEAR,
-  DIR_FAR,
-  DIR_ALL
-};
+//enum {
+//  DIR_NONE,
+//  DIR_LEFT,
+//  DIR_RIGHT,
+//  DIR_UP,
+//  DIR_DOWN,
+//  DIR_NEAR,
+//  DIR_FAR,
+//  DIR_ALL
+//};
 
 // Set GPIO drive strengths and modes of operation
 void gpioInit()
 {
   // 1. LEDs
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-  GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, false);
+  GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, true);
 
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-  GPIO_PinModeSet(LED_port, LED_UP_PIN, gpioModePushPull, false);
+  GPIO_PinModeSet(LED_port, LED_UP_PIN, gpioModePushPull, true);
 
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-  GPIO_PinModeSet(LED_port, LED_RIGHT_PIN, gpioModePushPull, false);
+  GPIO_PinModeSet(LED_port, LED_RIGHT_PIN, gpioModePushPull, true);
 
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
-  GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, false);
+  GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, true);
 
 //  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
 //  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);

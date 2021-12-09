@@ -100,10 +100,6 @@ SL_WEAK void app_init(void)
       sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM2);
   }
 
-  // enable NVIC interrupts
-  NVIC_ClearPendingIRQ(LETIMER0_IRQn);
-  NVIC_EnableIRQ(LETIMER0_IRQn);
-
   // Start timer
   LETIMER_Enable(LETIMER0, true);
 
@@ -114,7 +110,7 @@ SL_WEAK void app_init(void)
   else {
       LOG_ERROR("Error: vl53l0x init");
   }
-  timerWaitms(500);
+  timerWaitms(1000);
 
   if (APDS9960_init()) {
       LOG_INFO("APDS-9960 initialization complete");
@@ -133,6 +129,10 @@ SL_WEAK void app_init(void)
   else {
       LOG_ERROR("Error: gesture sensor init");
   }
+
+  // enable NVIC interrupts
+  NVIC_ClearPendingIRQ(LETIMER0_IRQn);
+  NVIC_EnableIRQ(LETIMER0_IRQn);
 }
 
 

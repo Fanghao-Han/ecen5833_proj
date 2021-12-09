@@ -156,7 +156,7 @@ static bool handleGesture() {
       switch (gest_st) {
         case DIR_UP:
 //          LOG_INFO("Up");
-          gpioGestureLedSet(DIR_UP, 0);
+          gpioGestureLedSet(DIR_UP, 1);
           gpioGestureLedSet(DIR_DOWN, 0);
           gpioGestureLedSet(DIR_LEFT, 0);
           gpioGestureLedSet(DIR_RIGHT, 0);
