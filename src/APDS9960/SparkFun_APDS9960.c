@@ -514,7 +514,7 @@ bool APDS9960_isGestureAvailable()
 int APDS9960_readGesture()
 {
   uint8_t fifo_level = 0;
-  uint8_t bytes_read = 0;
+  int bytes_read = 0;
   uint8_t fifo_data[128] = {0};
   uint8_t gstatus = 0;
   int motion;

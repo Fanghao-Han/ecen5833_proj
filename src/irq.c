@@ -58,19 +58,19 @@ void LETIMER0_IRQHandler()
 //}
 
 
-void GPIO_EVEN_IRQHandler(void)
-{
-  uint32_t gpio_if = GPIO->IF;
-
-  // Clear all even pin interrupt flags
-  GPIO_IntClear(0x5555);
-
+//void GPIO_EVEN_IRQHandler(void)
+//{
+//  uint32_t gpio_if = GPIO->IF;
+//
+//  // Clear all even pin interrupt flags
+//  GPIO_IntClear(0x5555);
+//
 //
 //  if (gpio_if & (1U<<APDS9960_INT_PIN)) {
 //      // pd12
 //      gest_set_flag_isr(true);
 //  }
-}
+//}
 
 /**************************************************************************//**
  * @brief GPIO Odd IRQ for pushbuttons on odd-numbered pins

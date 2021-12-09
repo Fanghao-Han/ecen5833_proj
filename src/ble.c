@@ -148,6 +148,7 @@ void handle_ble_event(sl_bt_msg_t *evt)
       // -------------------------------
       // This event indicates that a connection was closed.
       case sl_bt_evt_connection_closed_id:
+      {
         LOG_INFO("Connection closed.\n\r");
 
         // Restart advertising after client has disconnected.
@@ -160,13 +161,19 @@ void handle_ble_event(sl_bt_msg_t *evt)
             LOG_ERROR("sl_bt_advertiser_start() returned != 0 status=0x%04x", (unsigned int) sc);
         }
 
-//        if (sl_bt_system_set_soft_timer(1638, VL53_TIMER_HANDLE, true) != SL_STATUS_OK) {
-//            LOG_ERROR("soft timer error\r\n");
-//        }
+        // stop distance sensor
+        if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
+            LOG_ERROR("soft timer error\r\n");
+        }
+
+        schedulerSetEventIdle();
+        vl_set_flag_enable(false);
+        gest_set_flag_enable(false);
 
         ble_data.app_connection = false;
         ble_data.app_connection_handle = ble_evt_get_connection_handle(evt);
-        break;
+      }
+      break;
 
       case sl_bt_evt_connection_parameters_id:
       {
@@ -185,13 +192,8 @@ void handle_ble_event(sl_bt_msg_t *evt)
             buf[1] = dist_val & 0x00FF;
             buf[0] = (dist_val & 0xFF00) >> 8;
 
-//ble_evt_get_connection_handle(evt),
             if (ble_data.app_connection) {
-//              sc = sl_bt_gatt_server_send_indication(
-//                  ble_data.app_connection,
-//                  gattdb_Distance,
-//                  sizeof(buf),
-//                  buf);
+
               sc = sl_bt_gatt_server_write_attribute_value(gattdb_Distance, 0, sizeof(buf), buf);
               if (sc != SL_STATUS_OK)
               {
@@ -213,18 +215,18 @@ void handle_ble_event(sl_bt_msg_t *evt)
 
       case sl_bt_evt_system_soft_timer_id:
       {
-        if (evt->data.evt_system_soft_timer.handle == APDS_TIMER_HANDLE) {
-            if (!vl_get_flag_enable() && !gest_get_flag_enable()) {
-                schedulerSetEventReadGesture();
-                gest_set_flag_enable(true);
-            }
-        }
-        else if (evt->data.evt_system_soft_timer.handle == VL53_TIMER_HANDLE) {
+        if (evt->data.evt_system_soft_timer.handle == VL53_TIMER_HANDLE) {
             if (!vl_get_flag_enable() && !gest_get_flag_enable()) {
                 schedulerSetEventReadDistance();
                 vl_set_flag_enable(true);
             }
         }
+//        else if (evt->data.evt_system_soft_timer.handle == APDS_TIMER_HANDLE) {
+//            if (!vl_get_flag_enable() && !gest_get_flag_enable()) {
+//                schedulerSetEventReadGesture();
+//                gest_set_flag_enable(true);
+//            }
+//        }
       }
           break;
 
@@ -257,13 +259,9 @@ void handle_ble_event(sl_bt_msg_t *evt)
                   LOG_ERROR("soft timer error\r\n");
               }
 
-            //        // 200ms per read for gesture sensor
-            //        if (sl_bt_system_set_soft_timer(6553, APDS_TIMER_HANDLE,0) != SL_STATUS_OK) {
-            //            LOG_ERROR("soft timer error\r\n");
-            //         }
-
             schedulerSetEventIdle();
             vl_set_flag_enable(false);
+            gest_set_flag_enable(false);
 
             LOG_INFO("Sensor off.");
           } else if (data_recv == 0x01) {
@@ -272,12 +270,8 @@ void handle_ble_event(sl_bt_msg_t *evt)
                     LOG_ERROR("soft timer error\r\n");
                 }
 
-              //        // 200ms per read for gesture sensor
-              //        if (sl_bt_system_set_soft_timer(0, APDS_TIMER_HANDLE,1) != SL_STATUS_OK) {
-              //            LOG_ERROR("soft timer error\r\n");
-              //         }
-
                 schedulerSetEventIdle();
+                gest_set_flag_enable(true);
 
               LOG_INFO("Sensor on.");
           } else {

@@ -146,10 +146,10 @@ SL_WEAK void app_process_action(void)
 {
   // scheduler application entry
   schedulerApp();
-  //gesture_fsm();
-  //gpioLedLeftToggle();
-  //timerWaitms(500);
 
+  if (gest_get_flag_enable()) {
+      gesture_fsm();
+  }
 }
 
 /**************************************************************************//**

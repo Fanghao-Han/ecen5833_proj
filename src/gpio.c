@@ -6,7 +6,9 @@
 #include "gpio.h"
 #include "SparkFun_APDS9960.h"
 
-//static bool led0_en = 0;
+#if EVAL_BRD==1
+static bool led0_en = 0;
+#endif
 static bool led_gest_en[4] = {0};
 /* Direction definitions */
 //enum {
@@ -24,6 +26,10 @@ static bool led_gest_en[4] = {0};
 void gpioInit()
 {
   // 1. LEDs
+#if EVAL_BRD==1
+  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
+  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
+#else
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
   GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, true);
 
@@ -35,17 +41,9 @@ void gpioInit()
 
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
   GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, true);
-
-//  GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
-//  GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
-
+#endif
   // 2. Distance Sensor VL53L0X
-//  GPIO_DriveStrengthSet(VL53L0X_GPIO_PORT, gpioDriveStrengthStrongAlternateStrong);
-//  GPIO_PinModeSet(VL53L0X_GPIO_PORT, VL53L0X_XSHUT_PIN, gpioModePushPull, false);
-
   GPIO_PinModeSet(VL53L0X_GPIO_PORT, VL53L0X_GPIO1_PIN, gpioModeInputPullFilter, 1);
-//  GPIO_ExtIntConfig(VL53L0X_GPIO_PORT, VL53L0X_GPIO1_PIN, VL53L0X_GPIO1_PIN / 4,
-//                    1, 1, true);
   GPIO_ExtIntConfig(VL53L0X_GPIO_PORT, VL53L0X_GPIO1_PIN, VL53L0X_GPIO1_PIN, 0, 1, true);
 
   // 3. Gesture Sensor APDS9960
@@ -58,23 +56,23 @@ void gpioInit()
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 } // gpioInit()
 
+#if EVAL_BRD==1
+void gpioLed0SetOn()
+{
+  if (!led0_en) {
+    GPIO_PinOutSet(LED0_port,LED0_pin);
+    led0_en = true;
+  }
+}
 
-//void gpioLed0SetOn()
-//{
-//  if (!led0_en) {
-//    GPIO_PinOutSet(LED0_port,LED0_pin);
-//    led0_en = true;
-//  }
-//}
-//
-//void gpioLed0SetOff()
-//{
-//  if (led0_en) {
-//    GPIO_PinOutClear(LED0_port,LED0_pin);
-//    led0_en = false;
-//  }
-//}
-
+void gpioLed0SetOff()
+{
+  if (led0_en) {
+    GPIO_PinOutClear(LED0_port,LED0_pin);
+    led0_en = false;
+  }
+}
+#endif
 
 void gpioGestureLedSet(uint8_t led_id, bool on)
 {
@@ -142,18 +140,6 @@ void gpioGestureLedSet(uint8_t led_id, bool on)
   }
 
 }
-
-void gpioGestureLedLeftSetOff()
-{
-  GPIO_PinOutClear(LED_port,LED_LEFT_PIN);
-}
-
-void gpioGestureLedLeftToggle()
-{
-  GPIO_PinOutToggle(LED_port,LED_LEFT_PIN);
-}
-
-
 
 void gpioI2C0SetOff()
 {

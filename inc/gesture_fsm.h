@@ -50,8 +50,6 @@ typedef enum {
 }gest_state_t;
 
 
-typedef struct gest_data_typedef gest_data_t;
-
 /**
  * @brief
  *  FLAG - Enable
@@ -76,13 +74,6 @@ bool gest_get_flag_isr();
  * */
 void gest_set_flag_data_ready(bool is_enable);
 bool gest_get_flag_data_ready();
-
-/**
- * @brief
- *  gesture data write & read
- * */
-void gest_set_result(gest_data_t * wdata);
-gest_data_t * gest_get_result();
 
 
 void gesture_fsm();
