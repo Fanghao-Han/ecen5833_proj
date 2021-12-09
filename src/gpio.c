@@ -53,7 +53,7 @@ void gpioInit()
   GPIO_ExtIntConfig(APDS9960_GPIO_PORT, APDS9960_INT_PIN, APDS9960_INT_PIN, 0, 1, true);
 
   // Enable IRQ for even numbered GPIO pins
-  NVIC_EnableIRQ(GPIO_EVEN_IRQn);
+  //NVIC_EnableIRQ(GPIO_EVEN_IRQn);
   // Enable IRQ for odd numbered GPIO pins
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 } // gpioInit()
