@@ -65,11 +65,11 @@ void GPIO_EVEN_IRQHandler(void)
   // Clear all even pin interrupt flags
   GPIO_IntClear(0x5555);
 
-
-  if (gpio_if & (1U<<APDS9960_INT_PIN)) {
-      // pd12
-      gest_set_flag_isr(true);
-  }
+//
+//  if (gpio_if & (1U<<APDS9960_INT_PIN)) {
+//      // pd12
+//      gest_set_flag_isr(true);
+//  }
 }
 
 /**************************************************************************//**
@@ -83,7 +83,11 @@ void GPIO_ODD_IRQHandler(void)
   GPIO_IntClear(0xAAAA);
 
   if (gpio_if & (1U<<VL53L0X_GPIO1_PIN)) {
-        // pd11
+        // distance
         vl_set_flag_measure_ready(true);
+    }
+  else if (gpio_if & (1U<<APDS9960_INT_PIN)) {
+        // gesture
+        gest_set_flag_isr(true);
     }
 }

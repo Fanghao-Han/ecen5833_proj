@@ -83,10 +83,10 @@ void gesture_fsm() {
             gest_set_flag_isr(false);
 
 //            gpioLed0SetOn();
-            gpioGestureLedSet(DIR_UP, 1);
-            gpioGestureLedSet(DIR_DOWN, 1);
-            gpioGestureLedSet(DIR_LEFT, 1);
-            gpioGestureLedSet(DIR_RIGHT, 1);
+//            gpioGestureLedSet(DIR_UP, 1);
+//            gpioGestureLedSet(DIR_DOWN, 1);
+//            gpioGestureLedSet(DIR_LEFT, 1);
+//            gpioGestureLedSet(DIR_RIGHT, 1);
 
             handleGesture();
 
