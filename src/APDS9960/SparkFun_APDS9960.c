@@ -66,14 +66,14 @@ bool setGestureMode(uint8_t mode);
 /* Members */
 gesture_data_type gesture_data_ = {0};
 
-int gesture_ud_delta_= 0;
-int gesture_lr_delta_= 0;
-int gesture_ud_count_= 0;
-int gesture_lr_count_= 0;
-int gesture_near_count_= 0;
-int gesture_far_count_= 0;
-int gesture_state_= 0;
-int gesture_motion_= 0;
+ int gesture_ud_delta_= 0;
+ int gesture_lr_delta_= 0;
+ int gesture_ud_count_= 0;
+ int gesture_lr_count_= 0;
+ int gesture_near_count_= 0;
+ int gesture_far_count_= 0;
+ int gesture_state_= 0;
+ int gesture_motion_= DIR_NONE;
 
 /**
 * @brief Constructor - Instantiates APDS9960 object
@@ -82,15 +82,15 @@ void APDS9960_data_init(void)
 {
   memset(&gesture_ud_delta_, 0, sizeof(gesture_ud_delta_));
   gesture_lr_delta_ = 0;
-
+  
   gesture_ud_count_ = 0;
   gesture_lr_count_ = 0;
-
+  
   gesture_near_count_ = 0;
   gesture_far_count_ = 0;
-
+  
   gesture_state_ = 0;
-  gesture_motion_ = 0;
+  gesture_motion_ = DIR_NONE;
 }
 
 

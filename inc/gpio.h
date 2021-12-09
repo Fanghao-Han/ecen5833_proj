@@ -37,8 +37,10 @@
 #define VL53L0X_GPIO1_PIN   11        // Interrupt
 
 /* Color & Gesture Sensor Apds9960 */
-#define APDS9960_GPIO_PORT  gpioPortD
-#define APDS9960_INT_PIN    12        // Interrupt
+//#define APDS9960_GPIO_PORT  gpioPortD
+//#define APDS9960_INT_PIN    12        // Interrupt
+#define APDS9960_GPIO_PORT  gpioPortF
+#define APDS9960_INT_PIN    7        // Interrupt
 
 // Function prototypes
 void gpioInit();
