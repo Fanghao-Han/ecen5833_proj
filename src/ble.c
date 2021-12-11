@@ -7,6 +7,7 @@
  *  Reference: soc_thermometer/app.c
  */
 
+#include "app.h"
 #include "ble.h"
 #include "log.h"
 #include "app_assert.h"

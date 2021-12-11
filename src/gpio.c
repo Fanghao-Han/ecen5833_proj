@@ -6,9 +6,9 @@
 #include "gpio.h"
 #include "SparkFun_APDS9960.h"
 
-#if EVAL_BRD==1
+
 static bool led0_en = 0;
-#endif
+static bool led1_en = 0;
 static bool led_gest_en[4] = {0};
 /* Direction definitions */
 //enum {
@@ -56,7 +56,7 @@ void gpioInit()
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 } // gpioInit()
 
-#if EVAL_BRD==1
+
 void gpioLed0SetOn()
 {
   if (!led0_en) {
@@ -72,7 +72,22 @@ void gpioLed0SetOff()
     led0_en = false;
   }
 }
-#endif
+
+void gpioLed1SetOn()
+{
+  if (!led1_en) {
+    GPIO_PinOutSet(LED1_port,LED1_pin);
+    led1_en = true;
+  }
+}
+
+void gpioLed1SetOff()
+{
+  if (led1_en) {
+    GPIO_PinOutClear(LED1_port,LED1_pin);
+    led1_en = false;
+  }
+}
 
 void gpioGestureLedSet(uint8_t led_id, bool on)
 {

@@ -9,7 +9,7 @@
 #include "em_gpio.h"
 #include <string.h>
 
-#define EVAL_BRD 1
+#define EVAL_BRD 0
 // Student Edit: Define these, 0's are placeholder values.
 // See the radio board user guide at https://www.silabs.com/documents/login/user-guides/ug279-brd4104a-user-guide.pdf
 // and GPIO documentation at https://siliconlabs.github.io/Gecko_SDK_Doc/efm32g/html/group__GPIO.html
@@ -47,10 +47,13 @@
 void gpioInit();
 
 /* GPIO Write */
-#if EVAL_BRD==1
+
 void gpioLed0SetOn();
 void gpioLed0SetOff();
-#endif
+
+
+void gpioLed1SetOn();
+void gpioLed1SetOff();
 
 /**
  * led_id - use "DIR_UP", "DIR_DOWN", "DIR_LEFT", "DIR_RIGHT"

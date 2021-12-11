@@ -35,6 +35,8 @@ void gesture_fsm() {
             gest_set_flag_isr(false);
 #if EVAL_BRD==1
             gpioLed0SetOn();
+#else
+            gpioLed0SetOn();
 #endif
             handleGesture();
 
@@ -45,7 +47,7 @@ void gesture_fsm() {
 #if EVAL_BRD==1
             gpioLed0SetOff();
 #else
-            ;
+            gpioLed0SetOff();;
 #endif
         }
         break;
