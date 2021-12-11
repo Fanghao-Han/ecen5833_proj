@@ -199,16 +199,13 @@ void handle_ble_event(sl_bt_msg_t *evt)
               {
                   LOG_ERROR("sl_bt_gatt_server_send_indication() returned != 0 status=0x%04x", (unsigned int) sc);
               }
-
-              if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
-                  LOG_ERROR("soft timer error\r\n");
-              }
+//
+//              if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
+//                  LOG_ERROR("soft timer error\r\n");
+//              }
             }
 
             app_log("distance: %d mm\r\n", dist_val);
-
-            schedulerSetEventIdle();
-            vl_set_flag_enable(false);
         }
         break;
       }
@@ -255,7 +252,7 @@ void handle_ble_event(sl_bt_msg_t *evt)
           // Toggle LED.
           if (data_recv == 0x00) {
               // stop distance sensor
-              if (sl_bt_system_set_soft_timer(0, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
+              if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
                   LOG_ERROR("soft timer error\r\n");
               }
 
@@ -270,7 +267,9 @@ void handle_ble_event(sl_bt_msg_t *evt)
                     LOG_ERROR("soft timer error\r\n");
                 }
 
-                schedulerSetEventIdle();
+                //schedulerSetEventIdle();
+                schedulerSetEventReadDistance();
+                vl_set_flag_enable(true);
                 gest_set_flag_enable(true);
 
               LOG_INFO("Sensor on.");
