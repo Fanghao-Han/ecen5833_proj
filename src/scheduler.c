@@ -61,6 +61,7 @@ void schedulerSetEventReadDistance()
   CORE_ENTER_CRITICAL();
   // set the event in your data structure, this is a read-modify-write
   curr_event = evtReadDistance;
+  vl_reset_fsm();
   // exit critical section
   CORE_EXIT_CRITICAL();
 } // schedulerSetEventReadTemp()

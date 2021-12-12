@@ -16,8 +16,8 @@
 
 extern void timerWaitms(uint32_t time_ms);
 
-static uint8_t curr_state = 0;
-static uint8_t next_state = 0;
+static uint8_t gst_curr_state = 0;
+static uint8_t gst_next_state = 0;
 
 bool flag_gest_en = false;
 bool flag_gest_isr = false;
@@ -27,10 +27,17 @@ static bool handleGesture();
 
 void gesture_fsm() {
 
-  curr_state = next_state;
+  gst_curr_state = gst_next_state;
 
-  switch(curr_state) {
+  switch(gst_curr_state) {
       case gest_st_IDLE: {
+//        if (gest_get_flag_isr()) {
+//            gest_set_flag_isr(false);
+//            gst_next_state = gest_st_WaitForMeasure;
+//        }
+//      }
+//      break;
+//      case gest_st_WaitForMeasure:{
         if (gest_get_flag_isr()) {
             gest_set_flag_isr(false);
 #if EVAL_BRD==1
@@ -39,9 +46,6 @@ void gesture_fsm() {
             gpioLed0SetOn();
 #endif
             handleGesture();
-
-            schedulerSetEventIdle();
-            //next_state = gest_st_MeasureRequest;
         }
         else {
 #if EVAL_BRD==1
@@ -50,8 +54,8 @@ void gesture_fsm() {
             gpioLed0SetOff();;
 #endif
         }
-        break;
       }
+      break;
   }
 }
 

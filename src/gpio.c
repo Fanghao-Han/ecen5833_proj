@@ -26,10 +26,10 @@ static bool led_gest_en[4] = {0};
 void gpioInit()
 {
   // 1. LEDs
-#if EVAL_BRD==1
+
   GPIO_DriveStrengthSet(LED0_port, gpioDriveStrengthWeakAlternateWeak);
   GPIO_PinModeSet(LED0_port, LED0_pin, gpioModePushPull, false);
-#else
+#if EVAL_BRD==0
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
   GPIO_PinModeSet(LED_port, LED_LEFT_PIN, gpioModePushPull, true);
 
@@ -42,6 +42,7 @@ void gpioInit()
   GPIO_DriveStrengthSet(LED_port, gpioDriveStrengthStrongAlternateStrong);
   GPIO_PinModeSet(LED_port, LED_BOTTOM_PIN, gpioModePushPull, true);
 #endif
+
   // 2. Distance Sensor VL53L0X
   GPIO_PinModeSet(VL53L0X_GPIO_PORT, VL53L0X_GPIO1_PIN, gpioModeInputPullFilter, 1);
   GPIO_ExtIntConfig(VL53L0X_GPIO_PORT, VL53L0X_GPIO1_PIN, VL53L0X_GPIO1_PIN, 0, 1, true);

@@ -5,8 +5,8 @@
 
 extern void timerWaitms(uint32_t time_ms);
 
-static uint8_t curr_state = 0;
-static uint8_t next_state = 0;
+static uint8_t vl_curr_state = 0;
+static uint8_t vl_next_state = 0;
 
 extern uint8_t vl_stop_variable;
 
@@ -17,15 +17,15 @@ bool flag_vl_data_ready = false;
 uint16_t vl_result = 0;
 
 void ridar_fsm() {
-  curr_state = next_state;
+  vl_curr_state = vl_next_state;
 
-  switch(curr_state) {
+  switch(vl_curr_state) {
     case vlst_IDLE: {
       if (vl_get_flag_enable()) {
           /* This "enable" flag will be set in ble.c*/
           /* Single-read */
           vl_set_flag_data_ready(false);
-          next_state = vlst_MeasureRequest;
+          vl_next_state = vlst_MeasureRequest;
       }
       break;
     }
@@ -41,14 +41,14 @@ void ridar_fsm() {
       vl_writeReg(0x80, 0x00);
       vl_writeReg(SYSRANGE_START, 0x01);
 
-      next_state = vlst_WaitForStartBit;
+      vl_next_state = vlst_WaitForStartBit;
       break;
     }
 
     case vlst_WaitForStartBit: {
       if ((vl_readReg(SYSRANGE_START) & 0x01) == 0x00) {
           vl_set_flag_measure_ready(false);
-          next_state = vlst_WaitForMeasure;
+          vl_next_state = vlst_WaitForMeasure;
       }
       timerWaitms(5);
       break;
@@ -57,7 +57,7 @@ void ridar_fsm() {
     case vlst_WaitForMeasure: {
       if (vl_get_flag_measure_ready()) {
           vl_set_flag_measure_ready(false);
-          next_state = vlst_MeasureCompleted;
+          vl_next_state = vlst_MeasureCompleted;
       }
       timerWaitms(5);
       break;
@@ -71,7 +71,7 @@ void ridar_fsm() {
       vl_set_flag_data_ready(true);
       sl_bt_external_signal(BT_EXT_SIG_RIDAR_READY);
 
-      next_state = vlst_IDLE;
+      vl_next_state = vlst_IDLE;
       break;
     }
 
@@ -120,3 +120,7 @@ uint16_t vl_get_result() {
   return vl_result;
 }
 
+void vl_reset_fsm(void) {
+  vl_curr_state = vlst_IDLE;
+  vl_next_state = vlst_IDLE;
+}

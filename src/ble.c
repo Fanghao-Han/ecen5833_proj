@@ -167,9 +167,9 @@ void handle_ble_event(sl_bt_msg_t *evt)
             LOG_ERROR("soft timer error\r\n");
         }
 
-        schedulerSetEventIdle();
-        vl_set_flag_enable(false);
-        gest_set_flag_enable(false);
+      schedulerSetEventIdle();
+      vl_set_flag_enable(false);
+      gest_set_flag_enable(false);
 
         ble_data.app_connection = false;
         ble_data.app_connection_handle = ble_evt_get_connection_handle(evt);
@@ -193,6 +193,9 @@ void handle_ble_event(sl_bt_msg_t *evt)
             buf[1] = dist_val & 0x00FF;
             buf[0] = (dist_val & 0xFF00) >> 8;
 
+            schedulerSetEventIdle();
+            vl_set_flag_enable(false);
+
             if (ble_data.app_connection) {
 
               sc = sl_bt_gatt_server_write_attribute_value(gattdb_Distance, 0, sizeof(buf), buf);
@@ -200,13 +203,14 @@ void handle_ble_event(sl_bt_msg_t *evt)
               {
                   LOG_ERROR("sl_bt_gatt_server_send_indication() returned != 0 status=0x%04x", (unsigned int) sc);
               }
-//
+
 //              if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,1) != SL_STATUS_OK) {
 //                  LOG_ERROR("soft timer error\r\n");
 //              }
+              app_log("distance: %d mm\r\n", dist_val);
             }
 
-            app_log("distance: %d mm\r\n", dist_val);
+
         }
         break;
       }
@@ -214,7 +218,7 @@ void handle_ble_event(sl_bt_msg_t *evt)
       case sl_bt_evt_system_soft_timer_id:
       {
         if (evt->data.evt_system_soft_timer.handle == VL53_TIMER_HANDLE) {
-            if (!vl_get_flag_enable() && !gest_get_flag_enable()) {
+            if (!vl_get_flag_enable()) {
                 schedulerSetEventReadDistance();
                 vl_set_flag_enable(true);
             }
@@ -262,19 +266,21 @@ void handle_ble_event(sl_bt_msg_t *evt)
             gest_set_flag_enable(false);
 
             LOG_INFO("Sensor off.");
-          } else if (data_recv == 0x01) {
+          }
+          else if (data_recv == 0x01) {
               // 1s per read for distance sensor
                 if (sl_bt_system_set_soft_timer(32768, VL53_TIMER_HANDLE,0) != SL_STATUS_OK) {
                     LOG_ERROR("soft timer error\r\n");
                 }
 
                 //schedulerSetEventIdle();
-                schedulerSetEventReadDistance();
-                vl_set_flag_enable(true);
+//                schedulerSetEventReadDistance();
+//                vl_set_flag_enable(true);
                 gest_set_flag_enable(true);
 
               LOG_INFO("Sensor on.");
-          } else {
+          }
+          else {
               LOG_ERROR("Invalid attribute value: 0x%02x", (int)data_recv);
           }
         }

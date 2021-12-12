@@ -59,7 +59,7 @@ bool vl_get_flag_data_ready();
 void vl_set_result(uint16_t val);
 uint16_t vl_get_result();
 
-
+void vl_reset_fsm(void);
 void ridar_fsm();
 
 #endif
